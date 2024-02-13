@@ -1,0 +1,3 @@
+[submodule "ws1_tools/rserve-ts"]
+	path = ws1_tools/rserve-ts
+	url = git@github.com:tmelliott/rserve-ts
