@@ -1,3 +1,15 @@
 [submodule "ws1_tools/rserve-ts"]
 	path = ws1_tools/rserve-ts
 	url = git@github.com:tmelliott/rserve-ts
+[submodule "ws9_other/totaltypescript/advanced-patterns-workshop"]
+	path = ws9_other/totaltypescript/advanced-patterns-workshop
+	url = git@github.com:tmelliott/advanced-patterns-workshop
+[submodule "ws9_other/totaltypescript/zod-tutorial"]
+	path = ws9_other/totaltypescript/zod-tutorial
+	url = https://github.com/total-typescript/zod-tutorial
+[submodule "ws9_other/totaltypescript/react-typescript-tutorial"]
+	path = ws9_other/totaltypescript/react-typescript-tutorial
+	url = https://github.com/total-typescript/react-typescript-tutorial
+[submodule "ws1_tools/rserve-js"]
+	path = ws1_tools/rserve-js
+	url = git@github.com:tmelliott/rserve-js
