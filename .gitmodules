@@ -13,3 +13,6 @@
 [submodule "ws1_tools/rserve-js"]
 	path = ws1_tools/rserve-js
 	url = git@github.com:tmelliott/rserve-js
+[submodule "ws1_tools/ts"]
+	path = ws1_tools/ts
+	url = git@github.com:tmelliott/ts
