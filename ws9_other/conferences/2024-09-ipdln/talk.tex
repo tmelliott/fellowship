@@ -1,0 +1,206 @@
+\documentclass{beamer}
+
+\usepackage{mathtools}
+% \usepackage{tikz}
+% \usetikzlibrary{shapes,arrows}
+% \tikzstyle{arrow}=[draw] % here
+
+\usetheme{Szeged}
+
+\newcommand{\code}[1]{\underline{#1}}
+\newcommand{\prog}[1]{\textsf{\bfseries #1}}
+
+\setbeamertemplate{navigation symbols}{}
+\definecolor{ialred}{rgb}{0.73,0.11,0.11}
+
+\usecolortheme[named=ialred]{structure}
+\setbeamercolor{titlelike}{fg=white,bg=ialred}
+
+\title[IDI Search]{\textbf{IDI Search}\\
+    \textit{A metadata search app for exploring\\New Zealand’s administrative linked data}
+}
+
+\author{Tom Elliott\texorpdfstring{\\[0.5em]}{and}
+    \textbf{\scriptsize Collaborators}\texorpdfstring{\\}{:}
+    \footnotesize Barry Milne, Eileen Li, Andrew Sporle, and Colin Simpson
+}
+\institute[Te Rourou Tātaritanga / iNZight Analtytics Ltd]{
+    Developed by: Te Rourou Tātaritanga \, {\color{gray} terourou.org}\texorpdfstring{\\}{,}
+    Ongoing support: iNZight Analytics Ltd \, {\color{gray} inzight.co.nz}
+}
+
+
+\date{IPDLN Chicago\linebreak September 2024}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+
+\begin{document}
+
+
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+    \maketitle
+\end{frame}
+
+\setbeamertemplate{headline}[miniframes theme]
+\setbeamertemplate{footline}[miniframes theme]
+
+\section{Introduction}
+
+\begin{frame}
+    \frametitle{The Integrated Data Infrastructure (IDI)}
+
+    \begin{itemize}
+        \item Large research database
+        \item De-identified microdata about people and households
+        \item Cross-sector research $\rightarrow$ insight into society/economy
+        \item Data Lab: secure facility providing access to the IDI
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Data dictionaries}
+
+    \begin{itemize}
+        \item Contain \emph{metadata} about data in IDI
+        \begin{itemize}
+            \item Detailed descriptions
+            \item Variable names, coding information, etc.
+        \end{itemize}
+        \item Stored in Excel workbooks
+        \begin{itemize}
+            \item Independent update/maintenance across agencies
+            \item Inconsistent formats, structures, typos/errors, etc.
+        \end{itemize}
+        \item Audience: existing researchers
+        \item Difficult to find general information
+        \item Not available to new researchers developing research proposals
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{A searchable index}
+
+    \begin{itemize}
+        \item New users often ask \\\emph{Is information on X available in the IDI?}
+        \item Can we construct a searchable index?
+        \item How do we go about parsing the data dictionaries?
+    \end{itemize}
+\end{frame}
+
+\section{The data}
+
+\begin{frame}
+    \frametitle{IDI data sets}
+
+    \begin{itemize}
+        \item Admin datasets linkable at the individual level
+        \item \emph{Clean} contains the routinely (3x yearly) updated data
+        \item \emph{Adhoc} contains one-off or more frequently updated data (often with timestamped names)
+        \item Generate a list of variables from the schema
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Data dictionaries}
+
+    \begin{itemize}
+        \item Individual Excel workbooks per \emph{collection} (one or more related datasets)
+        \item Collection and dataset(s) description
+        \item Spreadsheet of variables, descriptions, codings, etc.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Other sources}
+
+    \begin{itemize}
+        \item Manually curated datasets by us
+        \item Bridge the gap between IDI schema and data dictionaries\\[2em]
+        \item Lists of collections without dictionaries
+        \item Renamed datasets/variables
+        \item Agency names and associated collections
+        \item Regex patterns for date-stamped naming conventions
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Data hierarchy}
+
+    \begin{center}
+
+        \begin{align*}
+            \overbracket[0.5pt]{\strut
+            \text{Agency} \rightarrow
+                \text{Collection}}^{\text{Manual}}
+            \rightarrow
+                    \underbracket[0.5pt]{\overbracket[0.5pt]{\strut
+                    \text{Dataset} \rightarrow \text{Variable}
+                    }^{\text{SQL Schema}}
+                    }_{\text{Variables sheet}} \\[-1em]
+                \hphantom{\text{Agency} \rightarrow}
+                \underbracket[0.5pt]{
+                \underbracket[0.5pt]{\hphantom{
+                    \text{Collection} \rightarrow \text{Dataset}
+                }}_{\text{Collections sheet / Manual}}
+                \hphantom{\rightarrow \text{Variable}}
+                }_{\text{Data dictionaries}}
+        \end{align*}
+    \end{center}
+\end{frame}
+
+\section{Tools}
+
+\begin{frame}
+    \frametitle{Data wrangling}
+
+    \begin{itemize}
+        \item \prog{R} statistical software
+        \begin{itemize}
+            \item free, open-source
+            \item can read/write many formats
+            \item powerful data manipulation tools
+            \item easy to script
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{App Hosting}
+
+    \begin{itemize}
+        \item \prog{MySQL} database
+        \begin{itemize}
+            \item cloud hosted (planetscale)
+            \item structured data
+            \item text search
+        \end{itemize}
+        \item \prog{NextJS} web framework
+        \begin{itemize}
+            \item Hosted on Vercel (free!)
+            \item Easy to set-up and deploy
+            \item \prog{ReactJS} - Javascript framework for interactive applications
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\section{The wrangling process}
+
+\section{Demo}
+
+\section{Conclusion}
+
+\end{document}
