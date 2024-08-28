@@ -1,6 +1,0 @@
-\beamer@sectionintoc {1}{Introduction}{2}{0}{1}
-\beamer@sectionintoc {2}{The data}{6}{0}{2}
-\beamer@sectionintoc {3}{Tools}{11}{0}{3}
-\beamer@sectionintoc {4}{The wrangling process}{14}{0}{4}
-\beamer@sectionintoc {5}{Demo}{15}{0}{5}
-\beamer@sectionintoc {6}{Conclusion}{16}{0}{6}
