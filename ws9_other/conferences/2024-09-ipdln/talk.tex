@@ -1,7 +1,8 @@
 \documentclass{beamer}
 
 \usepackage{mathtools}
-% \usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{tikz}
 % \usetikzlibrary{shapes,arrows}
 % \tikzstyle{arrow}=[draw] % here
 
@@ -12,9 +13,10 @@
 
 \setbeamertemplate{navigation symbols}{}
 \definecolor{ialred}{rgb}{0.73,0.11,0.11}
+\definecolor{searchblue}{rgb}{0.38,0.65,0.98}
 
-\usecolortheme[named=ialred]{structure}
-\setbeamercolor{titlelike}{fg=white,bg=ialred}
+\usecolortheme[named=searchblue]{structure}
+\setbeamercolor{titlelike}{fg=white,bg=searchblue}
 
 \title[IDI Search]{\textbf{IDI Search}\\
     \textit{A metadata search app for exploring\\New Zealand’s administrative linked data}
@@ -29,19 +31,22 @@
     Ongoing support: iNZight Analytics Ltd \, {\color{gray} inzight.co.nz}
 }
 
+\titlegraphic{\vspace{-5em}\hspace{-26em}
+   \includegraphics[width=2cm]{idisearch}
+}
 
 \date{IPDLN Chicago\linebreak September 2024}
 
-\AtBeginSection[]{
-  \begin{frame}
-  \vfill
-  \centering
-  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
-    \usebeamerfont{title}\insertsectionhead\par%
-  \end{beamercolorbox}
-  \vfill
-  \end{frame}
-}
+% \AtBeginSection[]{
+%   \begin{frame}
+%   \vfill
+%   \centering
+%   \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+%     \usebeamerfont{title}\insertsectionhead\par%
+%   \end{beamercolorbox}
+%   \vfill
+%   \end{frame}
+% }
 
 
 \begin{document}
@@ -69,25 +74,6 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Data dictionaries}
-
-    \begin{itemize}
-        \item Contain \emph{metadata} about data in IDI
-        \begin{itemize}
-            \item Detailed descriptions
-            \item Variable names, coding information, etc.
-        \end{itemize}
-        \item Stored in Excel workbooks
-        \begin{itemize}
-            \item Independent update/maintenance across agencies
-            \item Inconsistent formats, structures, typos/errors, etc.
-        \end{itemize}
-        \item Audience: existing researchers
-        \item Difficult to find general information
-        \item Not available to new researchers developing research proposals
-    \end{itemize}
-\end{frame}
 
 \begin{frame}
     \frametitle{A searchable index}
@@ -118,14 +104,27 @@
 
     \begin{itemize}
         \item Individual Excel workbooks per \emph{collection} (one or more related datasets)
+        \item Contain \emph{metadata} about data in IDI
+        \begin{itemize}
+            \item Detailed descriptions
+            \item Variable names, coding information, etc.
+        \end{itemize}
         \item Collection and dataset(s) description
         \item Spreadsheet of variables, descriptions, codings, etc.
+        \begin{itemize}
+            \item Independent update/maintenance across agencies
+            \item Inconsistent formats, structures, typos/errors, etc.
+        \end{itemize}
+        \item Audience: existing researchers
+        \item Not available to new researchers developing research proposals
+
     \end{itemize}
 
 \end{frame}
 
+
 \begin{frame}
-    \frametitle{Other sources}
+    \frametitle{Other data sources}
 
     \begin{itemize}
         \item Manually curated datasets by us
@@ -199,8 +198,96 @@
 
 \section{The wrangling process}
 
+\begin{frame}
+    \frametitle{Read data dictionaries}
+
+    \begin{itemize}
+        \item \prog{R} script to parse Excel workbooks
+        \item Extract collection, dataset, and variable metadata
+        \item Detect issues/errors - modify script or fix manually
+        \begin{itemize}
+            \item After updating, sent back to Stats NZ
+            \item More complex issues returned to Stats NZ to fix
+        \end{itemize}
+        \item Identify issues e.g., duplicate variables
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Read SQL variable list}
+
+    \begin{itemize}
+        \item All refreshes and adhoc lists
+        \item Contains database, table, variable name
+        \item Some info about variable type/size
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Combine with metadata}
+
+    \begin{itemize}
+        \item Link variables and datasets (some regex)
+        \item Link datasets with collections (some manual)
+        \item Link collections and agencies
+        \item Store other metadata (e.g., name changes)
+        \item Clean up duplicates, formatting, special characters
+        \item Write to MySQL database
+    \end{itemize}
+\end{frame}
+
 \section{Demo}
 
+
+{ % all template changes are local to this group.
+\setbeamertemplate{navigation symbols}{}
+\begin{frame}<article:0>[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[at=(current page.center)] {
+            \includegraphics[keepaspectratio,
+            width=\paperwidth,
+            height=\paperheight]{demo1.png}
+            };
+    \end{tikzpicture}
+\end{frame}
+
+
+}
+
 \section{Conclusion}
+
+\begin{frame}
+    \frametitle{Conclusion}
+
+    \includegraphics[width=\linewidth]{conc1.png}
+
+    \begin{itemize}
+        \item 10-30 users per day (~200 users per month)
+        \item Listed as a go-to resource for new researchers
+        \item Database funded by Stats NZ
+        \item Data dictionary coverage increased, quality improved
+        \item Mentioned in `Intro to the IDI' training
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Future Work}
+
+    \begin{itemize}
+        \item Automate data dictionary update/processing
+        \item Secure funding for ongoing, routine updates
+        \item New features
+    \end{itemize}
+\end{frame}
+
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\begin{frame}
+
+    \begin{center}
+        \includegraphics[width=3cm]{idisearch}\\
+        \url{idisearch.terourou.org}
+    \end{center}
+\end{frame}
 
 \end{document}
