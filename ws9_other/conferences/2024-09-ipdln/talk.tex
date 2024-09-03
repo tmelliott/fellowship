@@ -66,22 +66,25 @@
 \begin{frame}
     \frametitle{The Integrated Data Infrastructure (IDI)}
 
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{idi.png}
+    \end{center}
+
     \begin{itemize}
-        \item Large research database
-        \item De-identified microdata about people and households
-        \item Cross-sector research $\rightarrow$ insight into society/economy
-        \item Data Lab: secure facility providing access to the IDI
+        \item Large research database, de-identified microdata
+        \item Cross-sector research
     \end{itemize}
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{A searchable index}
+    \frametitle{What's in the IDI?}
 
     \begin{itemize}
-        \item New users often ask \\\emph{Is information on X available in the IDI?}
-        \item Can we construct a searchable index?
-        \item How do we go about parsing the data dictionaries?
+        \item $\approx{}50,000$ variables, $\approx{}1,000$ datasets
+        \item Data dictionaries available in Data Lab
+        \item ``Is information on X available in the IDI?''
+        \item Can we build a searchable index?
     \end{itemize}
 \end{frame}
 
@@ -93,8 +96,8 @@
     \begin{itemize}
         \item Admin datasets linkable at the individual level
         \item \emph{Clean} contains the routinely (3x yearly) updated data
-        \item \emph{Adhoc} contains one-off or more frequently updated data (often with timestamped names)
-        \item Generate a list of variables from the schema
+        \item \emph{Adhoc} contains one-off or more frequently updated data (often with timestamped names)\\[2em]
+        \item[$\Rightarrow$] Generate a list of variables from the schema
     \end{itemize}
 
 \end{frame}
@@ -103,21 +106,17 @@
     \frametitle{Data dictionaries}
 
     \begin{itemize}
-        \item Individual Excel workbooks per \emph{collection} (one or more related datasets)
-        \item Contain \emph{metadata} about data in IDI
+        \item Excel workbooks
         \begin{itemize}
             \item Detailed descriptions
             \item Variable names, coding information, etc.
         \end{itemize}
-        \item Collection and dataset(s) description
-        \item Spreadsheet of variables, descriptions, codings, etc.
+        \item Independent update/maintenance across agencies
         \begin{itemize}
-            \item Independent update/maintenance across agencies
             \item Inconsistent formats, structures, typos/errors, etc.
+            \item Duplicated templates $\Rightarrow$ duplicated errors
         \end{itemize}
-        \item Audience: existing researchers
-        \item Not available to new researchers developing research proposals
-
+        \item Only available to approved, existing researchers
     \end{itemize}
 
 \end{frame}
@@ -164,36 +163,54 @@
 \section{Tools}
 
 \begin{frame}
-    \frametitle{Data wrangling}
+    \frametitle{Data preparation}
 
-    \begin{itemize}
-        \item \prog{R} statistical software
-        \begin{itemize}
-            \item free, open-source
-            \item can read/write many formats
-            \item powerful data manipulation tools
-            \item easy to script
-        \end{itemize}
-    \end{itemize}
+    \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.7\linewidth]{rlogo.png}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \begin{itemize}
+                \item free, open-source
+                \item can read/write many formats
+                \item powerful data manipulation tools
+                \item easy to script
+            \end{itemize}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
-    \frametitle{App Hosting}
+    \frametitle{Deployment}
 
-    \begin{itemize}
-        \item \prog{MySQL} database
-        \begin{itemize}
-            \item cloud hosted (planetscale)
-            \item structured data
-            \item text search
-        \end{itemize}
-        \item \prog{NextJS} web framework
-        \begin{itemize}
-            \item Hosted on Vercel (free!)
-            \item Easy to set-up and deploy
-            \item \prog{ReactJS} - Javascript framework for interactive applications
-        \end{itemize}
-    \end{itemize}
+    \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.8\linewidth]{mysql.png}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \begin{itemize}
+                \item cloud hosted (planetscale)
+                \item structured data
+                \item text search
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.7\linewidth]{nextjs.png}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \begin{itemize}
+                \item Hosted on Vercel (free!)
+                \item Easy to set-up and deploy
+                \item Javascript framework (ReactJS)
+            \end{itemize}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \section{The wrangling process}
@@ -286,7 +303,8 @@
 
     \begin{center}
         \includegraphics[width=3cm]{idisearch}\\
-        \url{idisearch.terourou.org}
+        \url{idisearch.terourou.org}\\
+        \url{github.com/tmelliott/idi-search-app}
     \end{center}
 \end{frame}
 
