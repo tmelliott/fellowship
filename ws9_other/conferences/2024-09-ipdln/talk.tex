@@ -1,11 +1,8 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
 \usepackage{mathtools}
 \usepackage{graphicx}
 \usepackage{tikz}
-% \usetikzlibrary{shapes,arrows}
-% \tikzstyle{arrow}=[draw] % here
-
 \usetheme{Szeged}
 
 \newcommand{\code}[1]{\underline{#1}}
@@ -31,22 +28,11 @@
     Ongoing support: iNZight Analytics Ltd \, {\color{gray} inzight.co.nz}
 }
 
-\titlegraphic{\vspace{-5em}\hspace{-26em}
+\titlegraphic{\vspace{-6.5em}\hspace{-28em}
    \includegraphics[width=2cm]{idisearch}
 }
 
 \date{IPDLN Chicago\linebreak September 2024}
-
-% \AtBeginSection[]{
-%   \begin{frame}
-%   \vfill
-%   \centering
-%   \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
-%     \usebeamerfont{title}\insertsectionhead\par%
-%   \end{beamercolorbox}
-%   \vfill
-%   \end{frame}
-% }
 
 
 \begin{document}
@@ -55,6 +41,7 @@
 \setbeamertemplate{headline}{}
 \setbeamertemplate{footline}{}
 \begin{frame}
+    \vspace{-2.5em}
     \maketitle
 \end{frame}
 
@@ -66,14 +53,18 @@
 \begin{frame}
     \frametitle{The Integrated Data Infrastructure (IDI)}
 
-    \begin{center}
-        \includegraphics[width=0.5\linewidth]{idi.png}
-    \end{center}
-
-    \begin{itemize}
-        \item Large research database, de-identified microdata
-        \item Cross-sector research
-    \end{itemize}
+    \begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\linewidth]{idi.png}
+        \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        % \begin{itemize}
+            An integrated database containing de-identified longitudinal microdata about people, households, \& businesses.
+        % \end{itemize}
+    \end{column}
+    \end{columns}
 \end{frame}
 
 
@@ -82,179 +73,161 @@
 
     \begin{itemize}
         \item $\approx{}50,000$ variables, $\approx{}1,000$ datasets
-        \item Data dictionaries available in Data Lab
-        \item ``Is information on X available in the IDI?''
-        \item Can we build a searchable index?
-    \end{itemize}
-\end{frame}
-
-\section{The data}
-
-\begin{frame}
-    \frametitle{IDI data sets}
-
-    \begin{itemize}
-        \item Admin datasets linkable at the individual level
-        \item \emph{Clean} contains the routinely (3x yearly) updated data
-        \item \emph{Adhoc} contains one-off or more frequently updated data (often with timestamped names)\\[2em]
-        \item[$\Rightarrow$] Generate a list of variables from the schema
+        \item Government agencies, surveys, and non-government organisations
+        \item Linkable at the individual level
     \end{itemize}
 
 \end{frame}
 
+
 \begin{frame}
-    \frametitle{Data dictionaries}
+    \frametitle{The problem: access to metadata}
 
     \begin{itemize}
-        \item Excel workbooks
+        \item Data dictionaries contain metadata about collections of datasets
+        \item Independent maintenance across agencies
         \begin{itemize}
-            \item Detailed descriptions
-            \item Variable names, coding information, etc.
-        \end{itemize}
-        \item Independent update/maintenance across agencies
-        \begin{itemize}
-            \item Inconsistent formats, structures, typos/errors, etc.
-            \item Duplicated templates $\Rightarrow$ duplicated errors
+            \item Inconsistencies, typos, etc.
+            \item Duplication
         \end{itemize}
         \item Only available to approved, existing researchers
+        \item Not easily navigable, difficult to keep up with changes
     \end{itemize}
-
 \end{frame}
 
+\section{Creating a solution}
 
 \begin{frame}
-    \frametitle{Other data sources}
+    \frametitle{Why a search app?}
 
     \begin{itemize}
-        \item Manually curated datasets by us
-        \item Bridge the gap between IDI schema and data dictionaries\\[2em]
-        \item Lists of collections without dictionaries
-        \item Renamed datasets/variables
-        \item Agency names and associated collections
-        \item Regex patterns for date-stamped naming conventions
+        \item A publicly available, searchable database
+        \item What data is available?
+        \item What has changed?\\[2em]
+
+        \item[$\Rightarrow$] Increase utility of a valuable database
     \end{itemize}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Data hierarchy}
-
-    \begin{center}
-
-        \begin{align*}
-            \overbracket[0.5pt]{\strut
-            \text{Agency} \rightarrow
-                \text{Collection}}^{\text{Manual}}
-            \rightarrow
-                    \underbracket[0.5pt]{\overbracket[0.5pt]{\strut
-                    \text{Dataset} \rightarrow \text{Variable}
-                    }^{\text{SQL Schema}}
-                    }_{\text{Variables sheet}} \\[-1em]
-                \hphantom{\text{Agency} \rightarrow}
-                \underbracket[0.5pt]{
-                \underbracket[0.5pt]{\hphantom{
-                    \text{Collection} \rightarrow \text{Dataset}
-                }}_{\text{Collections sheet / Manual}}
-                \hphantom{\rightarrow \text{Variable}}
-                }_{\text{Data dictionaries}}
-        \end{align*}
-    \end{center}
-\end{frame}
-
-\section{Tools}
 
 \begin{frame}
-    \frametitle{Data preparation}
+    \frametitle{Data sources}
 
-    \begin{columns}
-        \begin{column}{0.4\textwidth}
-            \centering
-            \includegraphics[width=0.7\linewidth]{rlogo.png}
-        \end{column}
-        \begin{column}{0.6\textwidth}
-            \begin{itemize}
-                \item free, open-source
-                \item can read/write many formats
-                \item powerful data manipulation tools
-                \item easy to script
-            \end{itemize}
-        \end{column}
-    \end{columns}
+    \begin{itemize}
+        \item Database schema
+        \item Data dictionaries
+        \item Manually curated metadata
+        \begin{itemize}
+            \item Agency names and associated collections
+            \item Renamed datasets/variables
+            \item Datestamped tables
+        \end{itemize}
+    \end{itemize}
 \end{frame}
-
-\begin{frame}
-    \frametitle{Deployment}
-
-    \begin{columns}
-        \begin{column}{0.4\textwidth}
-            \centering
-            \includegraphics[width=0.8\linewidth]{mysql.png}
-        \end{column}
-        \begin{column}{0.6\textwidth}
-            \begin{itemize}
-                \item cloud hosted (planetscale)
-                \item structured data
-                \item text search
-            \end{itemize}
-        \end{column}
-    \end{columns}
-
-    \begin{columns}
-        \begin{column}{0.4\textwidth}
-            \centering
-            \includegraphics[width=0.7\linewidth]{nextjs.png}
-        \end{column}
-        \begin{column}{0.6\textwidth}
-            \begin{itemize}
-                \item Hosted on Vercel (free!)
-                \item Easy to set-up and deploy
-                \item Javascript framework (ReactJS)
-            \end{itemize}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\section{The wrangling process}
 
 \begin{frame}
     \frametitle{Read data dictionaries}
 
-    \begin{itemize}
-        \item \prog{R} script to parse Excel workbooks
-        \item Extract collection, dataset, and variable metadata
-        \item Detect issues/errors - modify script or fix manually
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\linewidth]{dd-workflow.png}
+        \end{center}
+        \includegraphics[width=0.2\linewidth]{rlogo.png}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
         \begin{itemize}
-            \item After updating, sent back to Stats NZ
-            \item More complex issues returned to Stats NZ to fix
+            \item Search workbook for keywords
+            \item Sanitise data
+            \begin{itemize}
+                \item Minor errors fixed
+                \item Otherwise rejected
+            \end{itemize}
+            \item Returned to Stats NZ (usually fixed!)
         \end{itemize}
-        \item Identify issues e.g., duplicate variables
-    \end{itemize}
+
+    \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
     \frametitle{Read SQL variable list}
 
-    \begin{itemize}
-        \item All refreshes and adhoc lists
-        \item Contains database, table, variable name
-        \item Some info about variable type/size
-    \end{itemize}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{center}
+                \includegraphics[width=0.8\linewidth]{dd-sql.png}
+            \end{center}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Stats NZ generate at each update
+                \item Standard IDI output process
+                \item Table and variable IDs (schema)
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
 \end{frame}
 
 \begin{frame}
     \frametitle{Combine with metadata}
 
-    \begin{itemize}
-        \item Link variables and datasets (some regex)
-        \item Link datasets with collections (some manual)
-        \item Link collections and agencies
-        \item Store other metadata (e.g., name changes)
-        \item Clean up duplicates, formatting, special characters
-        \item Write to MySQL database
-    \end{itemize}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{center}
+                \includegraphics[width=0.8\linewidth]{dd-merge.png}
+            \end{center}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Variables in SQL schema missing from dictionaries
+                \item Variables in dictionaries missing from SQL schema (deleted? error?)
+                \item Datestamped variables
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
 \end{frame}
 
-\section{Demo}
+\begin{frame}
+    \frametitle{Final clean data}
 
+    \begin{center}
+        \includegraphics[width=0.7\linewidth]{dd-result.png}
+    \end{center}
+
+    \begin{itemize}
+        \item Text fields cleaned/formatted
+        \item Duplicates removed
+        \item Written to MySQL database
+    \end{itemize}
+
+\end{frame}
+
+\section{IDI Search}
+
+\begin{frame}
+    \frametitle{Deployed solution: IDI Search app}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{center}
+                \includegraphics[width=0.5\linewidth]{idisearch.png}
+            \end{center}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item UI: NextJS (Javascript framework)
+                \item MySQL text search
+                \item Cross-linking for easy navigation
+                \item \url{idisearch.terourou.org}
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+\end{frame}
 
 { % all template changes are local to this group.
 \setbeamertemplate{navigation symbols}{}
@@ -267,41 +240,102 @@
             };
     \end{tikzpicture}
 \end{frame}
-
-
+\begin{frame}<article:0>[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[at=(current page.center)] {
+            \includegraphics[keepaspectratio,
+            width=\paperwidth,
+            height=\paperheight]{demo2.png}
+            };
+    \end{tikzpicture}
+\end{frame}
+\begin{frame}<article:0>[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[at=(current page.center)] {
+            \includegraphics[keepaspectratio,
+            width=\paperwidth,
+            height=\paperheight]{demo3.png}
+            };
+    \end{tikzpicture}
+\end{frame}
+\begin{frame}<article:0>[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[at=(current page.center)] {
+            \includegraphics[keepaspectratio,
+            width=\paperwidth,
+            height=\paperheight]{demo4.png}
+            };
+    \end{tikzpicture}
+\end{frame}
 }
 
-\section{Conclusion}
+\section{Summary}
 
 \begin{frame}
-    \frametitle{Conclusion}
-
-    \includegraphics[width=\linewidth]{conc1.png}
+    \frametitle{Outcomes}
 
     \begin{itemize}
         \item 10-30 users per day (~200 users per month)
-        \item Listed as a go-to resource for new researchers
-        \item Database funded by Stats NZ
-        \item Data dictionary coverage increased, quality improved
-        \item Mentioned in `Intro to the IDI' training
+        \item Listed by Stats NZ as a go-to resource
     \end{itemize}
+
+    \vspace{2em}
+    \includegraphics[width=\linewidth]{conc1.png}
+
 \end{frame}
 
 \begin{frame}
-    \frametitle{Future Work}
+    \frametitle{Outcomes}
+
+    \begin{itemize}
+        \item Low-cost hosting funded by Stats NZ
+        \item Easily updatable when new dictionaries, refreshes available
+        \item Data dictionary coverage increased, quality improved
+    \end{itemize}
+
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{center}
+                Variables:\\[1em]
+    \includegraphics[width=\linewidth]{dd-cov1.png}
+            \end{center}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{center}
+                Datasets:\\[1em]
+                \includegraphics[width=\linewidth]{dd-cov2.png}
+            \end{center}
+        \end{column}
+    \end{columns}
+
+
+
+
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Next steps}
 
     \begin{itemize}
         \item Automate data dictionary update/processing
         \item Secure funding for ongoing, routine updates
         \item New features
+        \begin{itemize}
+            \item flag new datasets/variables
+            \item showing additional information e.g., application codes
+            \item extract information from other sheets in dictionaries
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
 \setbeamertemplate{headline}{}
 \setbeamertemplate{footline}{}
 \begin{frame}
-
     \begin{center}
+        \textbf{Dr.~Tom Elliott}\\
+        iNZight Analytics Ltd.\\
+        \url{tom@inzight.co.nz} \\[2em]
         \includegraphics[width=3cm]{idisearch}\\
         \url{idisearch.terourou.org}\\
         \url{github.com/tmelliott/idi-search-app}
