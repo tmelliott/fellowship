@@ -1,0 +1,458 @@
+\documentclass{article}
+
+\usepackage{fullpage}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{setspace}
+\doublespacing
+
+\newcommand{\pkg}[1]{\texttt{#1}}
+\newcommand{\cmd}[1]{\texttt{#1}}
+\newcommand{\prog}[1]{{\sf #1}}
+\newcommand{\proglang}[1]{\prog{#1}}
+\newcommand{\R}{\prog{R}}
+
+\usepackage{longtable}
+\usepackage{pdflscape}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  % stringstyle=\color{orange}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   % backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b,
+   upquote=true
+}
+
+\usepackage[
+    backend=biber,
+    style=apa,
+    sorting=nty
+]{biblatex}
+\addbibresource{references.bib}
+
+\usepackage{authblk}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[acronym]{glossaries}
+
+\makeglossaries
+\input{glossary}
+
+\title{\pkg{rserve-ts}: a \pkg{TypeScript} interface to \pkg{Rserve} for modern web apps}
+\author{Elliott, T.M.}
+\affil{iNZight Analytics Ltd}
+\affil{University of Auckland}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+The \pkg{Rserve} package \parencite{Urbanek2003} provides a way for programming environments to call \proglang{R} functions.
+
+\section{Typescript}
+\label{sec:ts}
+
+Typescript is a language for writing type-safe Javascript applications.
+It allows developers to define types for their packages which makes both development for them and others easier.
+It also ensures that almost all possible runtime errors are caught while writing the code.
+Additionally, development features like autocomplete make developing, extending, and debugging Typescript applications significantly easier.
+As a result, most modern web applications are now built using Typescript on top of whatever framework is being used (e.g., React, Svelte, etc).
+
+The \pkg{rserve-js} package has received very little development, despite being stable and actively used in the \proglang{RCloud} project.
+This means that it still employs ancient\footnote{10-year old} Javascript coding style, including \glspl{iife} and no type-safety.
+It also uses callback expressions for asynchronous code, instead of promises which are more useful from an \gls{api} standpoint.
+To bring \pkg{Rserve} to modern web development, we created a new package \pkg{rserve-ts} which provides a modern \gls{api} to \pkg{Rserve}.
+
+The key points to discuss are:
+\begin{itemize}
+    \item callback vs promises
+    \item known return types
+    \item user-specified value types (which must be asserted at runtime)
+\end{itemize}
+
+\subsection{Asynchronous functions: callbacks and promises}
+\label{sec:async}
+
+The \pkg{rserve-js} library is written using callbacks, an increasingly uncommon design choice among more modern libraries.
+Callbacks allow code to be executed once a function has completed evaluation, and is critical for between-environment communication;
+otherwise the client would appear frozen to a user while the evaluation is performed.
+As an example, let's say we have a function that downloads a file from a URL and copies the data into a database.
+\begin{verbatim}
+const loadData = (url: string) => {
+    // download and save data
+    return true;
+}
+\end{verbatim}
+This may take some time to complete, so in modern Javascript we would generally write this as an \emph{asynchronous} function by using the \verb+async+ keyword:
+\begin{verbatim}
+const loadData = async (url: string) => {
+    // download and save data
+    return true;
+}
+\end{verbatim}
+When this function is called somewhere in our code, Javascript knows that it cannot expect the result immediately, and will continue executing the following lines of code before \verb+loadData()+ is finished.
+Instead, the \verb+async+ keyword lets the function return a \emph{promise} instead, of the form ``the result will eventually be a boolean, but I haven't finished yet''.
+Once the promise is completed and the value is finally returned, any following code can be executed.
+There are two ways of doing this with promises: \verb+then()+ or \verb+await+.
+The former provides code that will be run appended to the promise, like so:
+\begin{verbatim}
+loadData('http://...').then(() => console.log('Data loaded!'));
+// more code that will run before loadData() completes
+\end{verbatim}
+This is good if the `more code' does not depend on \verb+loadData+, for example it may clear away any forms in the \gls{gui} or provide some loading information to the user.
+
+Sometimes, however, it might be preferred if the function waits until the asynchronous one is complete.
+This is useful when there is a chain of asynchronous functions one after another, and multiply-nested \verb+then()+'s can become complex.
+This alternate uses the \verb+await+ keyword, and additionally requires that the wrapping function is itself an async function, like this:
+\begin{verbatim}
+const main = async () => {
+    const res = await loadData('http://...');
+    if (!res) console.log('Data failed to load');
+    console.log('Data loaded!');
+}
+\end{verbatim}
+Here, we wait until \verb+loadData()+ has finished executing and the promise is full-filled.
+Then we can check if the result is indeed \verb+true+, and handle it accordingly.
+
+This is a very nice and tidy way of operating with asynchronous functions in Javascript, as the async/await syntax is particularly useful for widgets that depend on data or other long-running computations.
+However, \pkg{rserve-js} is written using callbacks, which are more like then \verb+then()+ syntax but instead of appending this after the promise, it is passed as an argument to the function itself.
+That is, the function expects a callback function that it will execute once it has finished.
+\begin{verbatim}
+ const loadData = (url: string, cb: (err: string | null, res: boolean) => void) => {
+    // download and save data
+    cb(true);
+}
+
+loadData('http://...', (err, res) => {
+    if (!res) console.log('Data failed to load');
+    console.log('Data loaded!');
+})
+\end{verbatim}
+
+\subsubsection{Handling known return types}
+\label{sec:known-return}
+
+
+\subsection{User-specified types from \proglang{R}}
+\label{sec:user-types}
+
+This is the trickiest part of this project.
+Requires developing a syntax that maps between \R{}'s front- and back-end data structures, \pkg{rserve-js} data structures (which mimic the back-end structures) and a friendly \gls{api} for developers that mimic's \R{}'s front-end \gls{api}.
+
+In Typescript, \emph{generic functions} allow users to either pass in objects of a known type (which gets inferred by the function), or specify the type of the thing they are passing out or, in our case, expecting back. The syntax for this is
+\begin{lstlisting}[language=Javascript]
+const x = myfun<{ result: number[] }>()
+\end{lstlisting}
+
+For example, the \R{} object \cmd{c(1, 2, 3)} is a numeric vector.
+This is represented as a complex \cmd{SEXP} (which is the term used to describe an arbitrary \R{} object, based on the predecessor language \proglang{S}).
+If you look at the result in Javascript, you get this:
+\begin{lstlisting}[language=Javascript]
+{
+  type: 'sexp',
+  value: {
+    type: 'double_array',
+    value: Float64Array(3) [ 1, 2, 3 ],
+    attributes: undefined
+  }
+}
+\end{lstlisting}
+Requiring users to define even this simple object would be overkill.
+So instead, we came up with a set of \emph{type helper functions} which can be used to express \R{} objects as Typescript types, and infer the underlying \pkg{rserve-js} structure.
+\begin{lstlisting}[language=Javascript]
+import { Numeric, Character, Boolean, Dataframe, List } from 'rserve-ts';
+
+type myVector = Numeric;
+type myDataFrame = Dataframe<{
+    x: Numeric,
+    y: Character,
+    z: Boolean
+}>;
+type myListWithAttributes = List<{
+    x: Numeric
+}, {
+    label: string,
+    checked: boolean
+}>
+\end{lstlisting}
+
+Due to the complex way in which \R{} objects can be built, we had to make use of Typescript's inference and generic methods to come up with an \gls{api} that is simple yet flexible enough to handle everything.
+Table~X shows the base types available in \pkg{rserve-ts} and their mappings back to \pkg{rserve-js}.
+
+The difficult aspect is distinguishing between constant and unknown values.
+For example, a factor has (potentially) known levels, but unknown values.
+A character vector may or may not be known:
+if it represents the names of something, or options for a function argument, for example, then the values are known and therefore this should be reflected in the type definition.
+
+As an example, compare the types of these two values:
+\begin{lstlisting}[language=Javascript]
+const x = ['one', 'two', 'three'];
+// x: string[]
+
+const y = ['option1', 'option2'] as const;
+// x: readonly ['option1', 'option2'];
+\end{lstlisting}
+The \cmd{readonly} means that this string array is fixed and cannot be modified.
+
+Writing a type helper for a normal character vector is fairly straightforward.
+Here it is, in fact:
+\begin{lstlisting}[language=Javascript]
+type Character = {
+  type: "character_array",
+  value: string[],
+  attributes: undefined
+}
+\end{lstlisting}
+
+If we want to allow users to optionally pass in the known values, we can make the type helper \emph{generic}.
+\begin{lstlisting}[language=Javascript]
+type KnownCharacter<T extends string[]> = {
+  type: "character_array",
+  value: T,
+  attributes: undefined
+}
+let levels: KnownCharacter<["one", "two"]>;
+// levels.value: ["one", "two"]
+\end{lstlisting}
+Having to use different helpers in these similar situations adds unnecessary complexity.
+We can simply combine the two by adding in a default value.
+\begin{lstlisting}[language=Javascript]
+type Character<T extends string[] = string[]> = {
+  type: "character_array",
+  value: T,
+  attributes: undefined
+}
+let vec = Character;
+// vec.value: string[]
+let names = Character<["one", "two", "three"]>;
+// names.value: ["one", "two", "three"]
+\end{lstlisting}
+
+The last piece of the puzzle is the presence of the \cmd{json()} method on the \pkg{rserve-js} types.
+This allows users to obtain a simple JSON type of the object, rather than the more complicated structure shown so far.
+\begin{lstlisting}[language=Javascript]
+const x: Character = {
+    type: "string_array",
+    value: ["one", "two", "three"],
+    attributes: undefined
+}
+x.json()
+// ["one", "two", "three"]
+\end{lstlisting}
+In an app, the last form is obviously our preferred way of working with the data.
+
+A slightly annoying thing about the \cmd{json()} method is that in many cases it returns a scalar if the length of the array is 1.
+
+
+\section{Types}
+\label{sec:types}
+
+\subsection{Base types}
+\label{sec:base-types}
+
+The base types include boolean, integer, double (numeric), and character types.
+The \pkg{rserve-js} implementation of these types introduces a small complexity whereby \emph{scalar} values are returned as scalars, rather than as arrays of length 1 (which would drastically simplify everything). Therefore, it is necessary to tell Typescript the expect length (1 is a scalar, any other value is an array, including 0).
+
+Scalar values are exactly the single value with no additional attributes.
+Array values are arrays or typed arrays (e.g., \cmd{Float64Array}) with the additional properties \cmd{r\_type} and \cmd{r\_attributes}.
+
+To allow these values, we had to rely on the \cmd{z.custom()} method from the \pkg{zod} package, as there is presently no way to represent an array with additional properties.
+
+\subsubsection{Logical/boolean}
+\label{sec:boolean}
+
+These are vectors of \cmd{TRUE} and \cmd{FALSE} values in \R{}.
+They are represented as an array of booleans in Javascript.
+\begin{lstlisting}[language=Javascript, numbers=none]
+console.log(await R.eval('c(TRUE, FALSE, TRUE)', R.logical(3)));
+// [ true, false, true, r_type: 'bool_array' ]
+console.log(await R.eval('1 == 2', R.logical(1)));
+// false
+\end{lstlisting}
+
+If the length is unknown, the user will have to check the result:
+\begin{lstlisting}[language=Javascript, numbers=none]
+const whichery = await R.eval('which(x == 3) < 5', R.logical());
+if (typeof whichery === "boolean") {
+    console.log('There', whichery ? 'is' : 'is not',
+      'a value of 3 in the first 5 elements of x');
+} else {
+    console.log('There are', whichery.length,
+      'values of 3 in the first 5 elements of x');
+}
+\end{lstlisting}
+
+This all changes, however, if there are attributes attached to the vector, in which case the array result is always returned:
+\begin{lstlisting}[language=Javascript, numbers=none]
+console.log(await R.eval('structure(TRUE, label = 'myvector')',
+  R.logical({ label: 'myvector' })));
+// [ true, r_type: 'bool_array', r_attributes: { label: 'myvector' } ]
+\end{lstlisting}
+
+In an future \R{} package we will provide a result type that adds attributes to results, which will allow users to easily ensure a result is always an array.
+
+\subsubsection{Integers and Floats}
+\label{sec:numeric}
+
+These are vectors of integers and floats in \R{} (using either \cmd{integer()} or \cmd{numeric()}, or the shorthand \cmd{1L}, etc).
+They are represented as Typed Arrays in Javascript.
+
+\begin{lstlisting}[language=Javascript, numbers=none]
+console.log(await R.eval('1:3', R.integer(3)));
+// Int32Array(3) [ 1, 2, 3, r_type: 'int_array' ]
+console.log(await R.eval('c(1, 2, 3)', R.numeric(3)));
+// Float64Array(3) [ 1, 2, 3, r_type: 'double_array' ]
+\end{lstlisting}
+
+Again, users should be careful when the length is unknown, as these are returned as scalars.
+
+\subsubsection{Strings, characters}
+\label{sec:character}
+
+Vectors of strings in \R{} are represented as arrays of strings in Javascript.
+\begin{lstlisting}[language=Javascript, numbers=none]
+console.log(await R.eval('hello world', R.character(1)));
+// 'hello world'
+console.log(await R.eval('c("a", "b", "c")', R.character(3)));
+// [ 'a', 'b', 'c', r_type: 'string_array' ]
+\end{lstlisting}
+
+\subsection{Vector types}
+\label{sec:vectors}
+
+Not to be confused with \R{} vectors (which is effectively all objects), behind the scenes vectors are simply a collection of values.
+The most primitive example in \R{} is \cmd{list()}, but can include tagged lists (which are lists with names), data frames, and attributes.
+
+\subsubsection{Lists}
+\label{sec:lists}
+
+Lists in \R{} are represented as \emph{vectors} (\cmd{XT\_VECTOR}) which can have names (tags).
+These are represented as either arrays or objects in Javascript, depending on whether the list has names or not.
+\begin{lstlisting}[language=Javascript, numbers=none]
+console.log(await R.eval('list(a = 1, b = 2, c = 3)', R.list()));
+// { a: 1, b: 2, c: 3, r_type: 'tagged_list' }
+console.log(await R.eval('list(1, 2, 'hello')', R.list()));
+// [ 1, 2, 'hello', r_type: 'vector' ]
+\end{lstlisting}
+
+Of course, the example above is just a simple demonstration of the concept.
+The values within a list can be any other valid \R{} object.
+We can describe to Typescript the structure of the list in one of two ways:
+\begin{lstlisting}[language=Javascript]
+type MyList = R.list<{ a: R.boolean(1), b: R.character(0), c: R.numeric(2) }>;
+console.log(await R.eval('list(a = TRUE, b = c('hello', 'world'), c = rnorm(2))', MyList));
+// {
+// a: true,
+// b: [ 'hello', 'world', r_type: 'string_array' ],
+// c: Float64Array [ 0.728351, 0.262258, r_type: 'double_array' ],
+// r_type: 'tagged_list'
+// }
+\end{lstlisting}
+
+\subsubsection{Data frames}
+\label{sec:dataframes}
+
+Data frames are a special type of list in \R{} where each element is a vector of the same length.
+
+\subsection{Other types}
+\label{sec:other}
+
+\subsubsection{Factors}
+\label{sec:factors}
+
+Factors are an important type of vector in \R{} that have a fixed set of levels.
+Essentially, however, they are just integers with additional attributes.
+
+\begin{lstlisting}[language=Javascript, numbers=none]
+console.log(
+  await R.eval(
+    'factor(c('a', 'b', 'c', 'b', 'b'), levels = c('a', 'b', 'c'))',
+    R.factor(['a', 'b', 'c'])
+  )
+);
+// [ "a", "b", "c", "b", "b",
+// levels: [ 'a', 'b', 'c', r_type: 'string_array' ],
+// r_type: 'int_array',
+// r_attributes: {
+//   class: 'factor',
+//   levels: [ 'a', 'b', 'c', r_type: 'string_array' ]
+// } ]
+\end{lstlisting}
+
+\subsection{Attributes}
+\label{sec:attributes}
+
+Attributes are a way of adding metadata to an object in \R{}.
+Essentially all objects can have attributes, and as mentioned earlier they effect the way the object is returned to the user (i.e., always the array type).
+
+In Javascript, they are represented as an object with the attribute names as keys and the values as values.
+
+Since the length is no longer important, we only need to pass the attributes.
+
+\begin{lstlisting}[language=Javascript, numbers=none]
+console.log(
+  await R.eval(
+    'structure(1:3, labels = c('a', 'b', 'c'))',
+    R.integer({ labels: R.character(3) })
+  )
+);
+// Int32Array(3) [ 1, 2, 3,
+//   r_type: 'int_array',
+//   r_attributes: { labels: [ 'a', 'b', 'c', r_type: 'string_array' ] }
+// ]
+\end{lstlisting}
+
+\section{Working with types}
+\label{sec:working-with-types}
+
+The Typescript library \pkg{zod} is used to validate the types of the objects returned from \pkg{rserve-js}.
+This means that the user can be confident that the object they are working with will be of the correct type at runtime, regardless of what happens in \R{}.
+
+The caveat is that if an invalid type is returned, the program will throw an error (but at least it will be caught immediately rather than throwing up some arbitrary error later on).
+
+The main advantage of this is that \gls{ux} is improved, allowing front end web developers to easily build out data-driven applications without having to worry about the data types they are working with.
+
+\section{Conclusion}
+
+\printglossaries
+\printbibliography
+
+\end{document}

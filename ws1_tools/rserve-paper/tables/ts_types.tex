@@ -1,0 +1,90 @@
+    % \caption{Type conversions between \R{} and rserve.}
+    % \label{tab:ts_types}
+
+    % \centering
+    \begin{longtable}{p{0.2\linewidth}p{0.5\linewidth}p{0.2\linewidth}}
+        \toprule
+        \R{} & \prog{Javascript} & \pkg{rserve-ts} \\
+        \midrule
+        \multicolumn{3}{l}{\bfseries Integer vectors} \\
+        \cmd{1:5} &
+        \cmd{Int32Array(5) [ 1, 2, 3, 4, 5 , r\_type: "int\_array" ]} &
+        \cmd{R.integer(5)} \\
+        \cmd{5L} &
+        \cmd{5} &
+        \cmd{R.integer(1)} \\
+        % \cmd{integer()},\newline \cmd{1:3} &
+%         \begin{lstlisting}[language=Javascript, numbers=none]
+% Int32Array(3) [ 1, 2, 3 , r_type: "int_array" ]
+%         \end{lstlisting} &
+%         \cmd{\newline \cmd{R.integer(3)} \\
+% %         \cmd{numeric()},\newline \cmd{c(1, 2, 3)} &
+% %         \begin{minipage}{8cm}
+% %         \begin{lstlisting}[language=Javascript, numbers=none]
+% % {
+% %     type: 'double_array',
+% %     value: Float64Array(3) [ 1, 2, 3 ],
+% %     attributes: undefined
+% % }
+% %         \end{lstlisting}
+% %         \end{minipage} \\
+% %         \cmd{character()},\newline \cmd{c("a", "b", "c")} &
+% %         \begin{minipage}{8cm}
+% %         \begin{lstlisting}[language=Javascript, numbers=none]
+% % {
+% %     type: 'string_array',
+% %     value: [ 'a', 'b', 'c' ],
+% %     attributes: undefined
+% % }
+% %         \end{lstlisting}
+% %         \end{minipage} \\
+% %         \cmd{boolean()},\newline \cmd{c(TRUE, TRUE, FALSE)} &
+% %         \begin{minipage}{8cm}
+% %         \begin{lstlisting}[language=Javascript, numbers=none]
+% % {
+% %     type: 'bool_array',
+% %     value: [ true, true, false ],
+% %     attributes: undefined
+% % }
+% %         \end{lstlisting}
+% %         \end{minipage} \\
+% %         \cmd{factor()},\newline
+% %         \cmd{iris\$Species[1:3]} &
+% %         \begin{minipage}{8cm}
+% %         \begin{lstlisting}[language=Javascript, numbers=none]
+% % {
+% %     type: 'int_array',
+% %     value: Int32Array(3) [ 1, 1, 1 ],
+% %     attributes: {
+% %         type: 'tagged_list',
+% %         value: [
+% %             {
+% %                 name: 'levels',
+% %                 value: {
+% %                     type: 'string_array',
+% %                     value: [
+% %                         'setosa',
+% %                         'versicolor',
+% %                         'virginica'
+% %                     ],
+% %                     attributes: undefined
+% %                 }
+% %             },
+% %             {
+% %                 name: 'class',
+% %                 value: {
+% %                     type: 'string_array',
+% %                     value: ['factor'],
+% %                     attributes: undefined
+% %                 }
+% %             }
+% %         ],
+% %         attributes: undefined
+% %     }
+% % }
+% %         \end{lstlisting}
+% %         \end{minipage} \\
+%         \bottomrule
+
+    \end{longtable}
+% \end{table}
