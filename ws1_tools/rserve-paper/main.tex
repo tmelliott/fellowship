@@ -68,7 +68,7 @@
 \input{glossary}
 
 \title{\pkg{rserve-ts}: a \pkg{TypeScript} interface to \pkg{Rserve} for modern web apps}
-\author{Elliott, T.M.}
+\author{Tom Elliott}
 \affil{iNZight Analytics Ltd}
 \affil{University of Auckland}
 
@@ -85,16 +85,122 @@
 \section{Introduction}
 \label{sec:intro}
 
-The \pkg{Rserve} package \parencite{Urbanek2003} provides a way for programming environments to call \proglang{R} functions.
+The \pkg{Rserve} package \parencite{Urbanek2003} provides a way for other programs to use the facilities of \R{} \parencite{RCT2023}.\footnote{This needs to be rephrased/paraphrased to avoid plagiarism.}
+The ecosystem consists of two parts: the \pkg{Rserve} server, which runs in an \R{} session and listens for connections, and the client, which connects to the server and sends commands to be evaluated.
+The library \pkg{rserve-js} is an Rserve client that allows Javascript applications to communicate with \R{}.
+However, \pkg{rserve-js} has not been updated since about 2018, and only then minor fixes were made.
+Furthermore, it uses a callback-based system for asynchronous code, which is not the modern way of doing things in Javascript.
+
+This paper describes the development of a new library, \pkg{rserve-ts}, which provides a modern \gls{api} to \pkg{Rserve} for Typescript applications.
+It is effectively a wrapper around \pkg{rserve-js}, but with a more modern interface that uses promises for asynchronous code, and implements type-checking for the data returned from \R{}.
+This not only ensures run-time safety, but also provides a better development experience for front-end developers, making it much easier to outsource front-end development to non-\R{} developers.
+
+It is part of a large piece of work to improve the \R{}-to-web ecosystem, with future development of a support \R{} package that allows \R{} developers to define the application functions with types that can be compiled into the Typescript schemas used in the front-end.
+
+\section{Defining schemas for \R{} objects in Javascript}
+\label{sec:schemas}
+
+There are two modes of operation for \pkg{rserve-js}: standard evaluation and object capabilities (Ocaps).
+In the former, users can send any arbitrary \R{} code to the server for evaluation, and the result is returned as a Javascript object.
+This object has a \cmd{.json()} method that returns a simple JSON representation of the object.
+In Ocap mode, the \cmd{.json()} method is called automatically, and the result is always returned as a JSON object.
+We therefore decided to base our \gls{api} on the JSON-representation of the objects, and modified the standard evaluation mode to also return the JSON object.
+
+In \R{}, all objects are vectors of a certain type.
+The type only represents the vector, or array, version of the type, however in Javascript values may be converted to scalars if they are of length 1 and have no attributes.\footnote{This is technically a ``feature'' but it may be easier to always return arrays, and add in types for scalar values.}
+Thus, the simlest types are scalar values (boolean, number, of string).
+In all other cases, the returned object is an object with additional properties, \cmd{r\_type} and (optionally) \cmd{r\_attributes}.
+
+In Typescript, we can use the \pkg{zod} library to describe schemas (or shapes) of the objects returned from \R{}.
+This library is commonly used for validating data in web applications, for example from an \gls{api}.
+It parses the shape of objects when they are first encountered, and throws an error (or returns a boolean) if the object does not match the schema.
+This allows the following code to assume the object has a valid, known type, and provide all the benefits of that (autocomplete, type-checking, etc).
+
+\subsection{The shape of objects}
+
+Like \R{}, Javascript is not type-safe, so the following code is perfectly valid:
+\begin{lstlisting}[language=Javascript,numbers=none]
+const x = new Int32Array([1, 2, 3, 4, 5]);
+x.r_type = 'int_array';
+\end{lstlisting}
+In this case, \cmd{x} is is a typed array (here of 32-bit integers), but it also has the additional properties \cmd{r\_type}.
+Defining this as a Zod schema is a little tricky, and at the current time requires using a custom schema.
+\begin{lstlisting}[language=Javascript,numbers=none]
+const intSchema = z.custom((data) => {
+  if (data instanceof Int32Array) {
+    return data.hasOwnProperty('r_type') && data.r_type === 'int_array';
+  }
+  return false;
+});
+const value = intSchema.parse(x); // no error
+const value2 = intSchema.parse(new Float64Array([1, 2, 3])); // error
+\end{lstlisting}
+
+As mentioned above, if \R{} returns a vector of length 1, without attributes, then \pkg{rserve-js} will automatically return the first element as a scalar value.
+Therefore, when defining generic type schemas, we need to account for this.
+The return type of a call to R returning an integer vector of unknown length is therefore:\footnote{I'm leaving off the \cmd{r\_attributes} for simplicity for now}
+\begin{lstlisting}[language=Javascript,numbers=none]
+type Integer = number | (Int32Array & { r_type: 'int_array' });
+
+const integerSchema = z.union([z.number(), intSchema]);
+integerSchema.parse(1); // no error
+integerSchema.parse(new Int32Array([1, 2, 3])); // error
+integerSchema.parse(x); // no error
+\end{lstlisting}
+
+The subsequent code will need to check if the value is a scalar or an array.
+In Typescript, this is called \emph{type guards}, and is a way of narrowing down the type of an object based on some condition.
+\begin{lstlisting}[language=Javascript,numbers=none]
+if (typeof value === 'number') {
+  console.log('Scalar value:', value);
+} else {
+  console.log('Array value:', value.length);
+}
+\end{lstlisting}
+Ideally, however, many functions will have a known return length, in which case we can define a custom function that will return the correct type.
+In Typescript, we can do this using \emph{function overloads}:
+\begin{lstlisting}[language=Javascript,numbers=none]
+type ZIntArray = z.ZodType<Int32Array & { r_type: 'int_array' }>;
+function integer(): z.ZodNumber | ZIntArray;
+function integer(n: 1): z.ZodNumber;
+function integer(n: Exclude<number, 1>): ZIntArray;
+function integer(n?: number) {
+  if (!n) return z.union([z.number(), intSchema]);
+  if (n === 1) return z.number();
+  return intSchema;
+}
+\end{lstlisting}
+In the above, we are defining a single \cmd{integer()} function with multiple signatures.
+If the function is called with no arguments, it will return a union of a number and an integer array schema
+If it is called with the argument 1, it will return a number schema, and otherwise it will return an integer array schema.
+It can be used like this:
+\begin{lstlisting}[language=Javascript,numbers=none]
+const nx = integer();
+nx.parse(1); // no error
+nx.parse(x); // no error
+
+const nx1 = integer(1);
+nx1.parse(1); // no error
+nx1.parse(x); // error
+
+const nx2 = integer(2);
+nx2.parse(1); // error
+nx2.parse(x); // no error
+\end{lstlisting}
+
+We have implemented functions for all the basic \R{} types.
+
+\pagebreak
+
+Everything after this is \emph{old}.
 
 \section{Typescript}
-\label{sec:ts}
 
-Typescript is a language for writing type-safe Javascript applications.
+Typescript is a language for writing type-safe Javascript applications \parencite{Bierman2014}.
 It allows developers to define types for their packages which makes both development for them and others easier.
 It also ensures that almost all possible runtime errors are caught while writing the code.
 Additionally, development features like autocomplete make developing, extending, and debugging Typescript applications significantly easier.
-As a result, most modern web applications are now built using Typescript on top of whatever framework is being used (e.g., React, Svelte, etc).
+As a result, many front-end developers are turning to Typescript, used by 12\% of developers in 2017, rising to 34\% in 2023 \parencite{JetBrains2023}.
 
 The \pkg{rserve-js} package has received very little development, despite being stable and actively used in the \proglang{RCloud} project.
 This means that it still employs ancient\footnote{10-year old} Javascript coding style, including \glspl{iife} and no type-safety.
@@ -451,6 +557,11 @@ The caveat is that if an invalid type is returned, the program will throw an err
 The main advantage of this is that \gls{ux} is improved, allowing front end web developers to easily build out data-driven applications without having to worry about the data types they are working with.
 
 \section{Conclusion}
+\label{sec:conclusion}
+
+\section*{Acknowledgements}
+
+Supported by the Ngā Puanga Pūtaiao Fellowships from Government funding, administered by the Royal Society Te Apārangi.
 
 \printglossaries
 \printbibliography

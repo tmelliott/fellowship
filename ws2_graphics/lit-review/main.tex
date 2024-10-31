@@ -63,12 +63,14 @@
 \usepackage{authblk}
 \usepackage{graphicx} % Required for inserting images
 \usepackage[acronym]{glossaries}
+% \usepackage[automake]{glossaries-extra}
 
 \makeglossaries
 \input{glossary}
 
+
 \title{A review of interactive graphics for data exploration and analysis}
-\author{Elliott, T.M.}
+\author{Tom Elliott}
 \affil{iNZight Analytics Ltd}
 \affil{University of Auckland}
 
@@ -85,5 +87,116 @@
 \section{Introduction}
 \label{sec:intro}
 
+\begin{verbatim}
+- The importance of data visualization in data analysis
+- How tools have changed over the years
+- Web front-end technologies are now the dominant platform
+- R has a rich ecosystem of packages for data visualization
+- A range of tools for specific tasks, or out-dated technologies
+\end{verbatim}
+
+Discussions by \cite{Cook2007}, \cite{Theus2014}, and \cite{Ward2015} have highlighted the importance of data visualization in the data analysis process.
+There are a wide range of visualisations and definitions of interactivity, which have evolved over time and vary depending by context.
+In this short review, we will focus on interactive graphics for data exploration and analysis, with an emphasis on the tools and frameworks used to produce them, specifically for reproduction and extension using \R{} and web technologies.
+
+\section{Interactive graphics}
+\label{sec:interactive-graphics}
+
+There are many definition of interactive graphics depending on the context.
+In our case, we are interested in the technical aspects of creating interactive graphics for data analysis.
+Specifically, we are interested in the availability of web technologies to create interactive graphics that are generated and powered by \R{}.
+In this context, an interactive graphic is one that allows users to interact with the data, using the graphic as a \gls{ui}.
+Users should be able to dig down into the data (filtering, subsetting, and faceting) as well as extract summaries (e.g., means, medians, etc.) and other statistics.
+
+Another key aspect in our context is the ability to link multiple graphics together.
+This allows users to create a selection of grahpics that are automatically linked together, and interaction with one is echoed in the others.
+For example, cliking a bar in a bar chart might highlight (the parts of) bars in other charts, or highlight points in a scatterplot that fall into the selected category.
+
+Some common techniques used in these graphics include:
+\begin{itemize}
+\item Brushing, which is the act of selecting a subset of data points by dragging the mouse over the graphic.
+\item
+\end{itemize}
+
+There are existing tools that allow users to do the above, one key example being \proglang{Mondrian} \cite{Theus2014}.
+\proglang{Mondrian} provides a simple menu-based interface driven by variable selection, allowing users to choose variables and then decide which chart type to use.
+Created charts are opened in a separate window, and automatically get linked to any existing or future charts.
+This allows users to quickly build up a set of linked graphics that can be used to explore the data.
+In their book, \cite{Theus2014} provide a comprehensive overview of the \proglang{Mondrian} system, including demonstrations of exploratative data analysis through the use of interactive linked graphics.
+Perhaps one downside of \proglang{Mondrian} is that it is a desktop application, and as such is limited to the local machine.
+Also, it uses outdated technology (Java) [check this], and is not easily extensible as say a web-based system.
+
+Another new development is \proglang{plotscaper}, an \R{} and \proglang{Typescript} package that allows users to create interactive linked graphics, with an emphasis on portraying summary statistics across linked plots \cite{Bartonicek2024}.
+This work is still in development, but shows promise for creating a modern web-based system for interactive graphics in \R{}.
+However, not yet sophisticated or feature-rich.
+
+The key points here are that these tools invite users to explore data, rather than simply look at it, and the level of interactivity is closer to the data than other more static graphics, for example as generated using plotly or similar tools.
+The end goal of our wider project is to develop a data analytivs environment.
+
+\section{Interactive data analysis}
+\label{sec:interactive-data-analysis}
+
+Interactive data analysis allows users (here analysts) to ask questions of the data and get answers to those questions, through models and visualizations.
+Typically, this is done through software such as \proglang{R} or \proglang{SAS} or \proglang{Python}, where users can iterate through models and tweak their results.
+Visualising the data is an integral part of the data analysis pipeline, and is used not only for exploratory data analysis, but also checking models and communicating results.
+
+We are interested in extending the interactive graphics component to more comprehensively cover the data analysis process.
+This is how \proglang{Mondrian} works, allowing users to build models (trend lines, etc.) and explore the data visually quite extensively without the need to write code or fit formal models.
+The key features that allow this are:
+\begin{itemize}
+\item Linked graphics, which allows users to see how variables interact with each other more easily.
+\item UI commands, such as context menus (right-click drop-downs) that provide access to common tasks, such as adding trend lines, filtering values, etc.
+\end{itemize}
+
+
+
+
+\section{Next steps}
+\label{sec:requirements}
+
+\begin{verbatim}
+- What are the key features of interactive data analysis/visualization?
+- Whare are some use cases?
+- Here's our proposal using the rserve ecosystem
+\end{verbatim}
+
+As part of a wider project to develop tools for building modern front-end apps powered by \R{}, using \pkg{Rserve}, we are looking at how to integrate interactive graphics into this ecosystem.
+A key feature will be the dissociation of the front-end graphics from the back-end microdata, which could pave the way for privacy-preserving data analysis and visualisation tools.
+
+One issue faced by research organisations is the technical expertise required to control access to data, and often expensive virtual environments are created to allow researchers to access the data.
+Alternatively, a selection of outputs are created and published, which can be time consuming and restrict what data is available.
+
+We want to develop an ecosystem based on disparate front-end and back-end systems, where the front-end is a web-based application that can be easily deployed and accessed, while the back-end is a secure \R{} server that provides fine-tuned control over what results get shared with the front-end.
+Confidentialisation, rounding, and suppression techniques can be used to ensure that no individual data points are shared with the front-end, while still allowing users to explore the data through interactive graphics such as bar charts and histograms.
+
+Some key features of our proposed system are:
+\begin{itemize}
+\item Linked graphics, which allow users to explore the data more easily, but specifically do the linking on the server. This requires that charts are updated from the server with new data or entirely new chart types as the user interacts with the data.
+\item Summaries and statistical information, which can be calculated on the server and sent to the front-end for display, such as trend lines, means, confidence intervals, etc.
+\item Fine-grained access control, so users have access to only the data they are allowed to see, and no more, with all outputs generated at request time (not cached).
+\item Sharing of results, so users can save their work and share it with others (who must have the appropriate access rights, otherwise the shared URL will not work).
+\end{itemize}
+
+Another advantage of this system is that it allows users to interact with large, real-time datasets that are analysed and processed on powerful servers, rather than on the user's local machine.
+This is also useful for long-running processes, for example fitting complex models or running simulations.
+The user can start the job and then wait until the results are available.
+In such cases caching on the server can be used to ensure that results are available even if the user closes the connection and returns later.
+
+The key to building this system will be to create some simple widget libraries that allow users to easily get started with interactive graphics, and then extend these to more complex use cases and custom chart types.
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+
+
+
+\section*{Acknowledgements}
+
+Supported by the Ngā Puanga Pūtaiao Fellowships from Government funding, administered by the Royal Society Te Apārangi.
+
+\printglossary[type=\acronymtype,nonumberlist,nopostdot]
+
+\printbibliography
 
 \end{document}
