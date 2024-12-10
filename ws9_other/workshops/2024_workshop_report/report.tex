@@ -3,9 +3,14 @@
 \usepackage{setspace}
 \onehalfspacing
 
+\input{../../../tools.tex}
+
 \title{iNZight Rebuild Workshop Report}
 \author{Tom Elliott (iNZight Analytics Ltd)}
 \date{14 November and 5 December 2024}
+
+\usepackage{biblatex}
+\addbibresource{../../../references.bib}
 
 \begin{document}
 
@@ -25,15 +30,103 @@
 
 
 \section{Introduction}
-This section introduces the workshop, the reasoning behind the rebuild, the focus of the Fellowship programme, and the workshops' objectives.
 
-\section{Workshop Overview}
-This section provides an overview of the workshop, including the schedule and key topics covered.
+iNZight is a data analytics tool specialised for exploring data and teaching basic statistics concepts.
+Developed by a line of students under the supervision of Associate Professor Chris Wild at The University of Auckland, iNZight is available in two versions: the Desktop version built using GTK and an online version built using Shiny\cite{Chang2021}.
+Over the past 5 years, the tools used to build iNZight have become outdated or fully deprecated, as is the case with GTK.
+The online version is also limited in that shiny is not the best tool for building a large, complex app, and has been plagued by connectivity issues.
+This means that, to continue providing iNZight to our users, we need to find a new way to build iNZight.
 
-\section{Key Findings}
-This section summarizes the key findings and discussions from the workshop.
+The current project provides us with a unique opportunity not only to rebuild iNZight, but to fully design it with a much broader scope.
+However, our foremost concern is that we continue to deliver for our education user base, presently our primary stakeholders.
+We therefore held two workshops with statistics lecturers at The University of Auckland and Victoria University of Wellington to discuss the future of iNZight, with a focus on functionality that makes iNZight work for teaching statistics.
+
+The goal of the workshop was to engage with stakeholders to address their growing concerns over the future of iNZight.
+We then moved into an open discussion, specifically asking the attendees what features make iNZight stand out from the others, what features perhaps are not as useful, or could be improved, and what features are missing that would make iNZight a more useful tool for teaching statistics.
+This report summarises the discussions and outcomes of these workshops.
+
+
+\section{Discussion summary}
+
+The discussion was mostly unstructured, with attendees encouraged to speak freely and openly about their experiences with iNZight.
+The following is a structured summary of some of the key points made during the workshops.
+
+\subsection{What are your reasons for using iNZight?}
+
+\begin{itemize}
+    \item Change is hard: it is firmly built into some courses, and change would require a lot of work updating course notes, etc.
+    \item The interface design supports learners through visualisation; visualisation first is fundamental to data analysis.
+    \item Teaching versus learning versus research, although researchers still need to visualize data - other tools often have more research/industry focus and are less suitable for teaching.
+    \item Immediacy of outputs: something happens immediately after you click a button, change an input, etc.
+    \item The output provided, information displayed is more comprehensive that alternatives (e.g., Jamovi).
+    \item Survey package support is easy to use and intuitive.
+    \item Model fitting module for sample surveys.
+    \item The fact that iNZight uses R makes it easy for students to transition from the UI to coding ---- same graphs and outputs to compare.
+    \item Data mangement: rename variables interface is the best UI for doing this; could easily rename variables into your own language, etc.
+    \item It doesn't try to do everything: just a few things really well.
+    \item Import from a URL, this enables some cool teaching ideas.
+    \item Ability to create graphics that users can recreate with code: any changes to this should be considered carefully, discussed idea of a "plot generator" that ensures interaction is always converted into function arguments for reproducibility.
+\end{itemize}
+
+\subsection{What's not so good?}
+
+\begin{itemize}
+    \item Inconsistencies, idiosyncracies: p-value, rounding not consistent throughout outputs; could be more/better consideration on our output is formatted, rounded.
+    \item Some strange artefacts that mean outputs change over time, so automated teaching/assessment is difficult/needs constant updating.
+    \item Code generation: not necessarily in a logical order (for teaching coding).
+    \item No log of steps taken, reproducibility.
+    \item Some sub-optimal procedures to do common things, when perhaps the default/standard isn't right/the best way to do it (possibly opinionated).
+    \item The plot design for categorical versus numeric --- the order of variables \emph{does not} matter, but this does not necessarily translate to teaching modeeling concepts, etc.
+    \item Better handling of errors when importing data, especially when weird characters are present. Robustness is required for teaching, as students import different/live datasets so some will inevitably run into issues.
+    \item Plot types: ``spine plots'' not universally liked, understood, require more explanation --- option to turn off would be good.
+\end{itemize}
+
+\subsection{Features that would be nice}
+
+\begin{itemize}
+    \item Shareable link (e.g., Codap)
+    \item Better separation of interface/global settings (e.g., font size) versus current chart (plot type, etc). \emph{Note: this may be more of a Lite issue}.
+    \item Option to set/choose the first variable when sharing a link. \emph{Note: this is already a feature, but not documented well}.
+    \item Reordering levels of a factor by drag-and-drop.
+    \item Data cleaning using interactive graphics.
+\end{itemize}
+
+\subsection{Research opporunities}
+
+\begin{itemize}
+    \item How interface design aids learning.
+    \item Year 12--13, reeducating teachers on using data and tools.
+    \item From spreadsheet to iNZight to R.
+\end{itemize}
+
+\subsection{Barriers}
+
+The main barrier for iNZight in future is competition from other tools, such as Codap and Jamovi.
+Codap especially is for data science research and is heavily funded.
+
+
+\subsection{Short-term issues}
+
+As well as discussing the long-term future of iNZight, we also discussed some short-term issues that could be addressed in the current versions of iNZight to ensure it continues to provide for our users until such time as the rebuild is complete.
+
+\begin{itemize}
+    \item Two numeric variables: inference has no default (linear trend), user must specify it (unlike the other variable combinations) --- but things like this can be valuable teaching moments.
+    \item Ability to set null hypothesis for linear regression.
+    \item Confidence region for linear trend (not just bootstraps).
+\end{itemize}
+
+\subsubsection{iNZight Lite (shiny)}
+
+\begin{itemize}
+    \item Minor UI fixes to improve responsive design (e.g., for smaller screens).
+    \item Known issues, e.g., trend option disappearing after saving residuals --- setting name of new variable doesn't seem relevant, additional clicking and produces the bug.
+    \item Example data: autoload Visualize tab.
+\end{itemize}
+
 
 \section{Conclusion}
 This section provides concluding remarks and future directions.
+
+\printbibliography
 
 \end{document}
