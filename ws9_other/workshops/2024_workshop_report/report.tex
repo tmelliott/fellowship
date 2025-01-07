@@ -1,15 +1,27 @@
 \documentclass{article}
 
+% package for affiliation
+\usepackage{authblk}
+
 \usepackage{setspace}
 \onehalfspacing
 
 \input{../../../tools.tex}
 
-\title{iNZight Rebuild Workshop Report}
-\author{Tom Elliott (iNZight Analytics Ltd)}
-\date{14 November and 5 December 2024}
+\usepackage[hidelinks]{hyperref}
 
-\usepackage{biblatex}
+\title{iNZight Rebuild Workshop Report}
+\author[1,2]{Elliott, T.M.\thanks{Ngāti Whakaue, Ngāti Raukawa}}
+\author[1,2]{Sporle, A.A.\thanks{Ngāti Apa, Rangitāne, Te Rarawa}}
+\author[1]{Wild, C.J.}
+\affil[1]{iNZight Analytics Ltd}
+\affil[2]{The University of Auckland}
+\date{\small Workshops held 14 November and 5 December 2024\\
+Report published TBA\\
+Available from: URL
+}
+
+\usepackage[style=apa]{biblatex}
 \addbibresource{../../../references.bib}
 
 \begin{document}
@@ -26,24 +38,20 @@
     \centering
     \thanks{\noindent Supported by the Ngā Puanga Pūtaiao Fellowships from
     Government funding, administered by the Royal Society Te Apārangi. We would also like to thank the attendees of the workshops for their time and valuable input.}
+    \vspace{1em}
 \end{titlepage}
 
 
 \section{Introduction}
 
-iNZight is a data analytics tool specialised for exploring data and teaching basic statistics concepts.
-Developed by a line of students under the supervision of Associate Professor Chris Wild at The University of Auckland, iNZight is available in two versions: the Desktop version built using GTK and an online version built using Shiny\cite{Chang2021}.
-Over the past 5 years, the tools used to build iNZight have become outdated or fully deprecated, as is the case with GTK.
-The online version is also limited in that shiny is not the best tool for building a large, complex app, and has been plagued by connectivity issues.
-This means that, to continue providing iNZight to our users, we need to find a new way to build iNZight.
+iNZight has established itself as an essential tool for statistics education in New Zealand, offering a unique approach to data analysis and visualization \parencite{Wild2021,Wild2022}.
+Originally developed at The University of Auckland, the software exists in two forms: a desktop version built using GTK \parencite{GTKTeam2020} and a web-based version using Shiny \parencite{Chang2021}.
+However, the underlying technologies have become increasingly outdated, with GTK now deprecated and Shiny showing limitations in handling complex applications.
+This technological obsolescence, combined with ongoing connectivity issues in the online version, has necessitated a complete rebuild of the platform.
 
-The current project provides us with a unique opportunity not only to rebuild iNZight, but to fully design it with a much broader scope.
-However, our foremost concern is that we continue to deliver for our education user base, presently our primary stakeholders.
-We therefore held two workshops with statistics lecturers at The University of Auckland and Victoria University of Wellington to discuss the future of iNZight, with a focus on functionality that makes iNZight work for teaching statistics.
-
-The goal of the workshop was to engage with stakeholders to address their growing concerns over the future of iNZight.
-We then moved into an open discussion, specifically asking the attendees what features make iNZight stand out from the others, what features perhaps are not as useful, or could be improved, and what features are missing that would make iNZight a more useful tool for teaching statistics.
-This report summarises the discussions and outcomes of these workshops.
+This rebuild presents an opportunity to not only modernize iNZight's architecture but also to reimagine its capabilities while ensuring it continues to serve its core educational purpose.
+To guide this process, we organized two workshops with statistics lecturers from The University of Auckland and Victoria University of Wellington.
+These workshops aimed to address stakeholder concerns about iNZight's future and gather insights about which features are most valuable for statistics education, which could be improved, and what new functionality might enhance the teaching experience.
 
 
 \section{Discussion summary}
@@ -125,7 +133,17 @@ As well as discussing the long-term future of iNZight, we also discussed some sh
 
 
 \section{Conclusion}
-This section provides concluding remarks and future directions.
+
+The workshops revealed that iNZight's strength lies in its focused approach to teaching statistics through visualization and its user-friendly interface.
+Key advantages identified include its immediate visual feedback, comprehensive outputs, and seamless integration with R, which facilitates students' transition to coding.
+While some technical improvements are needed, such as consistency in output formatting and better error handling, the core functionality remains highly valued by educators.
+
+The feedback gathered suggests that future development should maintain iNZight's educational focus while addressing technical limitations.
+Important considerations for the rebuild include improving reproducibility through better code generation and step logging, enhancing data cleaning capabilities, and implementing features for better collaboration such as shareable links.
+However, it's crucial to maintain the software's current strengths: its immediate visual feedback, straightforward interface, and focused feature set that supports the teaching of statistical concepts.
+
+Future workshops will be held with other local and international stakeholders to gather additional feedback and refine the rebuild plan.
+These insights will guide the rebuild process, ensuring that iNZight continues to serve its educational mission while adapting to modern technical requirements and user needs.
 
 \printbibliography
 
