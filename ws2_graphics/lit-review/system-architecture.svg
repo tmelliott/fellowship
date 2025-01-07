@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+    <!-- Background -->
+    <rect x="0" y="0" width="800" height="400" fill="#fff"/>
+    
+    <!-- Client Side -->
+    <rect x="50" y="50" width="300" height="300" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+    <text x="200" y="80" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">Client Side</text>
+    
+    <!-- Browser Components -->
+    <rect x="70" y="100" width="260" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="1"/>
+    <text x="200" y="135" text-anchor="middle" font-family="Arial" font-size="14">Interactive Visualizations</text>
+    
+    <rect x="70" y="180" width="260" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="1"/>
+    <text x="200" y="215" text-anchor="middle" font-family="Arial" font-size="14">User Interface Controls</text>
+    
+    <rect x="70" y="260" width="260" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="1"/>
+    <text x="200" y="295" text-anchor="middle" font-family="Arial" font-size="14">State Management</text>
+    
+    <!-- Server Side -->
+    <rect x="450" y="50" width="300" height="300" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+    <text x="600" y="80" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">Server Side (R)</text>
+    
+    <!-- Server Components -->
+    <rect x="470" y="100" width="260" height="60" fill="#e1bee7" stroke="#6a1b9a" stroke-width="1"/>
+    <text x="600" y="135" text-anchor="middle" font-family="Arial" font-size="14">Data Processing Engine</text>
+    
+    <rect x="470" y="180" width="260" height="60" fill="#e1bee7" stroke="#6a1b9a" stroke-width="1"/>
+    <text x="600" y="215" text-anchor="middle" font-family="Arial" font-size="14">Statistical Computing</text>
+    
+    <rect x="470" y="260" width="260" height="60" fill="#e1bee7" stroke="#6a1b9a" stroke-width="1"/>
+    <text x="600" y="295" text-anchor="middle" font-family="Arial" font-size="14">Access Control & Security</text>
+    
+    <!-- Connecting Arrows -->
+    <path d="M330 130 L450 130" fill="none" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M450 160 L330 160" fill="none" stroke="#424242" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Arrow Marker -->
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#424242"/>
+        </marker>
+    </defs>
+    
+    <!-- Labels -->
+    <text x="390" y="120" text-anchor="middle" font-family="Arial" font-size="12">Requests</text>
+    <text x="390" y="190" text-anchor="middle" font-family="Arial" font-size="12">Responses</text>
+</svg>

@@ -103,22 +103,26 @@ In this short review, we will focus on interactive graphics for data exploration
 \label{sec:interactive-graphics}
 
 There are many definition of interactive graphics depending on the context.
-In our case, we are interested in the technical aspects of creating interactive graphics for data analysis.
-Specifically, we are interested in the availability of web technologies to create interactive graphics that are generated and powered by \R{}.
-In this context, an interactive graphic is one that allows users to interact with the data, using the graphic as a \gls{ui}.
+In our case, we are interested in the technical aspects of creating interactive graphics for data analysis,
+specifically the availability of web technologies to create interactive graphics that are generated and powered by \R{}.
+In this context, an interactive graphic is one that allows users to interact with the data, using the graphic as a \gls{ui} \parencite{Young2011}.
 Users should be able to dig down into the data (filtering, subsetting, and faceting) as well as extract summaries (e.g., means, medians, etc.) and other statistics.
 
 Another key aspect in our context is the ability to link multiple graphics together.
 This allows users to create a selection of grahpics that are automatically linked together, and interaction with one is echoed in the others.
+In \proglang{ViSta} \parencite{Young1996}, such displays are referred to as a \emph{SpreadPlot} \parencite{Young2003}, which are pre-defined sets of linked graphics for exploring a certain idea.
 For example, cliking a bar in a bar chart might highlight (the parts of) bars in other charts, or highlight points in a scatterplot that fall into the selected category.
 
 Some common techniques used in these graphics include:
 \begin{itemize}
 \item Brushing, which is the act of selecting a subset of data points by dragging the mouse over the graphic.
-\item
+\item buttons that alter the plot in some way
+\item clicking (on points, objects, etc)
+\item drag-and-drop of plot features (e.g., axes, order of categories)
+\item context menus (right-click drop-downs) that provide access to common tasks, such as adding trend lines, filtering values, etc.
 \end{itemize}
 
-There are existing tools that allow users to do the above, one key example being \proglang{Mondrian} \cite{Theus2014}.
+There are existing tools that allow users to do the above, such as \proglang{ViSta} \parencite{Young1996,Young2011} and \proglang{Mondrian} \parencite{Theus2014}.
 \proglang{Mondrian} provides a simple menu-based interface driven by variable selection, allowing users to choose variables and then decide which chart type to use.
 Created charts are opened in a separate window, and automatically get linked to any existing or future charts.
 This allows users to quickly build up a set of linked graphics that can be used to explore the data.
@@ -126,12 +130,22 @@ In their book, \cite{Theus2014} provide a comprehensive overview of the \proglan
 Perhaps one downside of \proglang{Mondrian} is that it is a desktop application, and as such is limited to the local machine.
 Also, it uses outdated technology (Java) [check this], and is not easily extensible as say a web-based system.
 
+\proglang{ViSta} (Visual Statistics) is another system that provides interactive graphics for data exploration and analysis.
+It places emphasis on the full analysis process, with pre-defined sets of linked graphics (SpreadPlots) that allow users to explore the data in a structured way.
+These are, arguably, more opinionated than \proglang{Mondrian}, but provide a more structured approach to data analysis.
+
 Another new development is \proglang{plotscaper}, an \R{} and \proglang{Typescript} package that allows users to create interactive linked graphics, with an emphasis on portraying summary statistics across linked plots \cite{Bartonicek2024}.
 This work is still in development, but shows promise for creating a modern web-based system for interactive graphics in \R{}.
 However, not yet sophisticated or feature-rich.
 
 The key points here are that these tools invite users to explore data, rather than simply look at it, and the level of interactivity is closer to the data than other more static graphics, for example as generated using plotly or similar tools.
 The end goal of our wider project is to develop a data analytivs environment.
+
+Others to discuss:
+\begin{itemize}
+  \item Plotly --- web-based interactive graphics, but have limited functionality for linked graphics, and are more focused on the visualisation aspect.
+  \item d3 --- a powerful web-based graphics library that allows users to create custom graphics, but requires a lot of technical expertise.
+\end{itemize}
 
 \section{Interactive data analysis}
 \label{sec:interactive-data-analysis}
